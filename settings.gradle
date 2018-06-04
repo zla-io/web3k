@@ -1,0 +1,15 @@
+rootProject.name = 'web3k-root'
+
+include ':crypto'
+include ':wallet'
+include ':rpc'
+
+rootProject.children.each { project ->
+    String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
+
+    project.projectDir = new File(settingsDir, fileBaseName)
+    project.buildFileName = "${fileBaseName}.gradle"
+
+    assert project.projectDir.isDirectory()
+    assert project.buildFile.isFile()
+}
