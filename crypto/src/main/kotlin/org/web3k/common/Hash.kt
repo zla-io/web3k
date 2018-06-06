@@ -1,9 +1,9 @@
 package org.web3k.common
 
 import org.bouncycastle.jcajce.provider.digest.Keccak
+import org.bouncycastle.jcajce.provider.digest.RIPEMD160
+import org.bouncycastle.jcajce.provider.digest.SHA256
 import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
 /**
  * Keccak-256 hash function.
@@ -47,7 +47,14 @@ fun sha3String(utf8String: String): String =
  * @return The hash value for the given input
  * @throws RuntimeException If we couldn't find any SHA-256 provider
  */
-@Throws(NoSuchAlgorithmException::class)
-fun sha256(input: ByteArray): ByteArray =
-        MessageDigest.getInstance("SHA-256")
-                .digest(input)
+fun ByteArray.sha256(): ByteArray =
+        SHA256.Digest().let {
+            it.update(this)
+            it.digest()
+        }
+
+fun ByteArray.ripemd160(): ByteArray =
+        RIPEMD160.Digest().let {
+            it.update(this)
+            it.digest()
+        }

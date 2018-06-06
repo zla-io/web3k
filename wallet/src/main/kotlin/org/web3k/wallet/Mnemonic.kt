@@ -32,6 +32,7 @@ import kotlin.experimental.and
  * @throws IllegalArgumentException If the given entropy is invalid
  * @throws IllegalStateException If the word list has not been loaded
  */
+@JvmOverloads
 fun generateMnemonic(initialEntropy: ByteArray, words: List<String> = ENGLISH_WORD_LIST): String {
     val ent = initialEntropy.size * 8
     require(ent in 128..256 && ent % 32 == 0) {
@@ -135,7 +136,7 @@ private fun toInt(bits: BooleanArray): Int {
 private fun calculateChecksum(initialEntropy: ByteArray): Byte {
     val ent = initialEntropy.size * 8
     val mask = (0xff shl 8 - ent / 32).toByte()
-    val bytes = sha256(initialEntropy)
+    val bytes = initialEntropy.sha256()
 
     return bytes[0] and mask
 }

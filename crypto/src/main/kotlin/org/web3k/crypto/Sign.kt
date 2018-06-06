@@ -21,7 +21,7 @@ import kotlin.experimental.and
  */
 
 private val CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1")
-internal val CURVE = ECDomainParameters(
+val CURVE = ECDomainParameters(
         CURVE_PARAMS.curve, CURVE_PARAMS.g, CURVE_PARAMS.n, CURVE_PARAMS.h)
 internal val HALF_CURVE_ORDER = CURVE_PARAMS.n.shiftRight(1)
 

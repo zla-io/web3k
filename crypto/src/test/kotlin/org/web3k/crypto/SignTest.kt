@@ -6,11 +6,9 @@ import org.junit.jupiter.api.Test
 import org.web3k.common.hexStringToByteArray
 import java.security.SignatureException
 
-class SignTest {
+private val TEST_MESSAGE = "A test message".toByteArray()
 
-    companion object {
-        private val TEST_MESSAGE = "A test message".toByteArray()
-    }
+class SignTest {
 
     @Test
     fun testSignMessage() {
