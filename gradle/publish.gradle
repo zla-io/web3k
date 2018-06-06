@@ -1,0 +1,28 @@
+// See:
+// https://github.com/codepath/android_guides/wiki/Building-your-own-Android-library
+// For gradle config:
+// https://inthecheesefactory.com/blog/how-to-upload-library-to-jcenter-maven-central-as-dependency/en
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'web3k'
+
+    publishedGroupId = 'org.web3k'
+    libraryName = 'web3k'
+    artifact = 'web3k'
+
+    libraryDescription = 'Web3k is a set of lightweight Kotlin components for integrating with Ethereum blockchains'
+
+    siteUrl = 'https://github.com/zla-io/web3k'
+    gitUrl = 'https://github.com/zla-io/web3k.git'
+
+    libraryVersion = '0.1'
+
+    developerId = 'pgreze'
+    developerName = 'Pierrick Greze'
+    developerEmail = 'pierrick.greze@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
