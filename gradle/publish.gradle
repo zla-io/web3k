@@ -7,9 +7,8 @@ ext {
     bintrayRepo = 'maven'
     bintrayName = 'web3k'
 
-    publishedGroupId = 'org.web3k'
-    libraryName = 'web3k'
-    artifact = 'web3k'
+    publishedGroupId = 'io.zla.web3k'
+    libraryName = 'web3k {name}'
 
     libraryDescription = 'Web3k is a set of lightweight Kotlin components for integrating with Ethereum blockchains'
 

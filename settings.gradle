@@ -1,4 +1,4 @@
-rootProject.name = 'web3k-root'
+rootProject.name = 'web3k'
 
 include ':crypto'
 include ':wallet'

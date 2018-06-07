@@ -45,20 +45,6 @@ subprojects {
     }
 
     apply from: "$rootDir/gradle/publish.gradle"
-    apply plugin: 'maven-publish'
+    apply from: "$rootDir/gradle/install.gradle"
     apply from: "$rootDir/gradle/bintray.gradle"
-
-    group = publishedGroupId
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-
-                artifact sourcesJar {
-                    classifier 'sources'
-                }
-            }
-        }
-    }
 }
