@@ -208,7 +208,7 @@ fun String.toExtendedKey(): ExtendedKey {
     } else {
         val compressedPublicBytes = ByteArray(COMPRESSED_PUBLIC_KEY_SIZE)
         buff.get(compressedPublicBytes)
-        val uncompressedPublicBytes = decompressKey(compressedPublicBytes)
+        val uncompressedPublicBytes = compressedPublicBytes.decompressKey()
         ECKeyPair(BigInteger.ZERO, BigInteger(1, uncompressedPublicBytes))
     }
     return ExtendedKey(keyPair, chainCode, depth, parent, sequence)

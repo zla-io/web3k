@@ -8,7 +8,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.web3k.common.clean0xPrefix
 import org.web3k.common.hexToByteArray
 import org.web3k.common.toHexStringNoPrefix
-import org.web3k.crypto.getAddress
+import org.web3k.crypto.publicKeyToAddress
 
 /**
  * Test batch for key derivation from seed given a path.
@@ -70,7 +70,7 @@ object Bip32Test : Spek({
                 val expectedPrivateKey = sample[2]
 
                 it("has expected address for $sample") {
-                    assertThat(getAddress(derivedKey.keyPair.publicKey).clean0xPrefix())
+                    assertThat(derivedKey.keyPair.publicKey.publicKeyToAddress().clean0xPrefix())
                             .isEqualTo(expectedAddress)
                 }
 

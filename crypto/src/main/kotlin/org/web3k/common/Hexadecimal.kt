@@ -1,8 +1,6 @@
 package org.web3k.common
 
-/**
- *  Returns 2 char hex string for Byte
- */
+/** Returns 2 char hex string for Byte */
 fun Byte.toHexString(): String =
         toInt().let {
             CHARS[it.shr(4) and 0x0f].toString() + CHARS[it.and(0x0f)].toString()
@@ -13,8 +11,9 @@ fun Char.fromHexToInt(): Int =
 
 private const val CHARS = "0123456789abcdef"
 
-fun ByteArray.toHexString(prefix: String = "0x"): String =
-        prefix + joinToString("") { it.toHexString() }
+fun ByteArray.toHexString(): String =
+        joinToString("") { it.toHexString() }
+                .prepend0xPrefix()
 
 fun String.hexToByteArray(): ByteArray {
     require (length % 2 == 0) {
