@@ -36,7 +36,7 @@ fun createEcKeyPair(): ECKeyPair =
         createSecp256k1KeyPair().toECKeyPair()
 
 fun BigInteger.publicKeyToAddress(): Address =
-        toHexStringZeroPadded(PUBLIC_KEY_LENGTH_IN_HEX)
+        toHexStringZeroPadded(PUBLIC_KEY_LENGTH_IN_HEX, true)
                 .publicKeyToAddress()
 
 fun String.publicKeyToAddress(): Address {

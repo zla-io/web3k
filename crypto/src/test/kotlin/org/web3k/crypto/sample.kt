@@ -1,6 +1,6 @@
 package org.web3k.crypto
 
-import org.web3k.common.toBigInt
+import org.web3k.common.hexToBigInteger
 
 // Keys generated for unit testing purposes.
 
@@ -10,9 +10,7 @@ const val ADDRESS = "0xef678007d18427e6022059dbc264f27507cd1ffc"
 
 const val PASSWORD = "Insecure Pa55w0rd"
 
-val PRIVATE_KEY = toBigInt(PRIVATE_KEY_STRING)
-val PUBLIC_KEY = toBigInt(PUBLIC_KEY_STRING)
+val PRIVATE_KEY = PRIVATE_KEY_STRING.hexToBigInteger()
+val PUBLIC_KEY = PUBLIC_KEY_STRING.hexToBigInteger()
 
 val KEY_PAIR = ECKeyPair(PRIVATE_KEY, PUBLIC_KEY)
-
-//val CREDENTIALS = create(KEY_PAIR)

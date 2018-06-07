@@ -16,10 +16,8 @@ class SignTest {
 
         val expected = SignatureData(
                 27.toByte(),
-                hexStringToByteArray(
-                        "0x9631f6d21dec448a213585a4a41a28ef3d4337548aa34734478b563036163786"),
-                hexStringToByteArray(
-                        "0x2ff816ee6bbb82719e983ecd8a33a4b45d32a4b58377ef1381163d75eedc900b")
+                "0x9631f6d21dec448a213585a4a41a28ef3d4337548aa34734478b563036163786".hexStringToByteArray(),
+                "0x2ff816ee6bbb82719e983ecd8a33a4b45d32a4b58377ef1381163d75eedc900b".hexStringToByteArray()
         )
 
         assertThat(signatureData).isEqualTo(expected)

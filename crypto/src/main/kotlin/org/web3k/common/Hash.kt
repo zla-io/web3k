@@ -12,9 +12,9 @@ import java.nio.charset.StandardCharsets
  * @return hash value as hex encoded string
  */
 fun sha3(hexInput: String): String {
-    val bytes = hexStringToByteArray(hexInput)
+    val bytes = hexInput.hexStringToByteArray()
     val result = sha3(bytes)
-    return toHexString(result)
+    return result.toHexString()
 }
 
 /**
@@ -38,7 +38,8 @@ fun sha3(input: ByteArray, offset: Int = 0, length: Int = input.size): ByteArray
  * @return hash value as hex encoded string
  */
 fun sha3String(utf8String: String): String =
-        toHexString(sha3(utf8String.toByteArray(StandardCharsets.UTF_8)))
+        sha3(utf8String.toByteArray(StandardCharsets.UTF_8))
+                .toHexString()
 
 /**
  * Generates SHA-256 digest for the given `input`.

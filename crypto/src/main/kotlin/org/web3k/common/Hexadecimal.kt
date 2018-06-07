@@ -1,9 +1,23 @@
 package org.web3k.common
 
+import kotlin.experimental.and
+
+fun ByteArray.toHexString(withPrefix: Boolean = true): String {
+    val stringBuilder = StringBuilder()
+    if (withPrefix) {
+        stringBuilder.append("0x")
+    }
+    for (i in 0 until size) {
+        stringBuilder.append(String.format("%02x", this[i] and 0xFF.toByte()))
+    }
+    return stringBuilder.toString()
+}
+
 /** Returns 2 char hex string for Byte */
 fun Byte.toHexString(): String =
         toInt().let {
-            CHARS[it.shr(4) and 0x0f].toString() + CHARS[it.and(0x0f)].toString()
+            CHARS[it.shr(4) and 0x0f].toString() +
+                    CHARS[it.and(0x0f)].toString()
         }
 
 fun Char.fromHexToInt(): Int =
@@ -29,6 +43,35 @@ fun String.hexToByteArray(): ByteArray {
             i += 2
         }
     }
+}
+
+// TODO: What's different with hexToByteArray from kethereum?
+fun String.hexStringToByteArray(): ByteArray {
+    val cleanInput = clean0xPrefix()
+
+    val len = cleanInput.length
+
+    if (len == 0) {
+        return byteArrayOf()
+    }
+
+    val data: ByteArray
+    val startIdx: Int
+    if (len % 2 != 0) {
+        data = ByteArray(len / 2 + 1)
+        data[0] = Character.digit(cleanInput[0], 16).toByte()
+        startIdx = 1
+    } else {
+        data = ByteArray(len / 2)
+        startIdx = 0
+    }
+
+    var i = startIdx
+    while (i < len) {
+        data[(i + 1) / 2] = ((Character.digit(cleanInput[i], 16) shl 4) + Character.digit(cleanInput[i + 1], 16)).toByte()
+        i += 2
+    }
+    return data
 }
 
 private fun Char.getNibbleValue(): Int =

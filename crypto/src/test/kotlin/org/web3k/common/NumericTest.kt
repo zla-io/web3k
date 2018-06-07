@@ -12,7 +12,7 @@ import java.math.BigInteger
 class NumericTest {
 
     companion object {
-        private val HEX_RANGE_ARRAY = byteArrayOf(
+        val HEX_RANGE_ARRAY = byteArrayOf(
                 asByte(0x0, 0x1),
                 asByte(0x2, 0x3),
                 asByte(0x4, 0x5),
@@ -22,35 +22,39 @@ class NumericTest {
                 asByte(0xc, 0xd),
                 asByte(0xe, 0xf))
 
-        private const val HEX_RANGE_STRING = "0x0123456789abcdef"
+        const val HEX_RANGE_STRING = "0x0123456789abcdef"
     }
 
     @Test
     fun testQuantityEncodeLeadingZero() {
-        assertThat(toHexStringWithPrefixSafe(BigInteger.valueOf(0L))).isEqualTo("0x00")
-        assertThat(toHexStringWithPrefixSafe(BigInteger.valueOf(1024L))).isEqualTo("0x400")
-        assertThat(toHexStringWithPrefixSafe(BigInteger.valueOf(java.lang.Long.MAX_VALUE)))
+        assertThat(BigInteger.valueOf(0L).toHexStringWithPrefixSafe())
+                .isEqualTo("0x00")
+        assertThat(BigInteger.valueOf(1024L).toHexStringWithPrefixSafe())
+                .isEqualTo("0x400")
+        assertThat(BigInteger.valueOf(java.lang.Long.MAX_VALUE).toHexStringWithPrefixSafe())
                 .isEqualTo("0x7fffffffffffffff")
-        assertThat(toHexStringWithPrefixSafe(
-                BigInteger("204516877000845695339750056077105398031")))
+        assertThat(BigInteger("204516877000845695339750056077105398031").toHexStringWithPrefixSafe())
                 .isEqualTo("0x99dc848b94efc27edfad28def049810f")
     }
 
     @Test
     fun testQuantityDecode() {
-        assertThat(decodeQuantity("0x0")).isEqualTo(BigInteger.valueOf(0L))
-        assertThat(decodeQuantity("0x400")).isEqualTo(BigInteger.valueOf(1024L))
-        assertThat(decodeQuantity("0x0")).isEqualTo(BigInteger.valueOf(0L))
-        assertThat(decodeQuantity(
-                "0x7fffffffffffffff")).isEqualTo(BigInteger.valueOf(java.lang.Long.MAX_VALUE))
-        assertThat(decodeQuantity("0x99dc848b94efc27edfad28def049810f"))
+        assertThat("0x0".decodeQuantity())
+                .isEqualTo(BigInteger.valueOf(0L))
+        assertThat("0x400".decodeQuantity())
+                .isEqualTo(BigInteger.valueOf(1024L))
+        assertThat("0x0".decodeQuantity())
+                .isEqualTo(BigInteger.valueOf(0L))
+        assertThat("0x7fffffffffffffff".decodeQuantity())
+                .isEqualTo(BigInteger.valueOf(java.lang.Long.MAX_VALUE))
+        assertThat("0x99dc848b94efc27edfad28def049810f".decodeQuantity())
                 .isEqualTo(BigInteger("204516877000845695339750056077105398031"))
     }
 
     @Test
     fun testQuantityDecodeLeadingZero() {
-        assertThat(decodeQuantity("0x0400")).isEqualTo(BigInteger.valueOf(1024L))
-        assertThat(decodeQuantity("0x001")).isEqualTo(BigInteger.valueOf(1L))
+        assertThat("0x0400".decodeQuantity()).isEqualTo(BigInteger.valueOf(1024L))
+        assertThat("0x001".decodeQuantity()).isEqualTo(BigInteger.valueOf(1L))
     }
 
     // If TestRpc resolves the following issue, we can reinstate this code
@@ -58,151 +62,123 @@ class NumericTest {
     @Disabled
     @Test
     fun testQuantityDecodeLeadingZeroException() {
-        assertThatThrownBy { decodeQuantity("0x0400") }
+        assertThatThrownBy { "0x0400".decodeQuantity() }
                 .isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test
     fun testQuantityDecodeMissingPrefix() {
-        assertThatThrownBy { decodeQuantity("ff") }
+        assertThatThrownBy { "ff".decodeQuantity() }
                 .isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test
     fun testQuantityDecodeMissingValue() {
-        assertThatThrownBy { decodeQuantity("0x") }
+        assertThatThrownBy { "0x".decodeQuantity() }
                 .isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test
     fun testQuantityEncode() {
-        assertThat(encodeQuantity(BigInteger.valueOf(0))).isEqualTo("0x0")
-        assertThat(encodeQuantity(BigInteger.valueOf(1))).isEqualTo("0x1")
-        assertThat(encodeQuantity(BigInteger.valueOf(1024))).isEqualTo("0x400")
-        assertThat(encodeQuantity(BigInteger.valueOf(java.lang.Long.MAX_VALUE)))
+        assertThat(BigInteger.valueOf(0).encodeQuantity()).isEqualTo("0x0")
+        assertThat(BigInteger.valueOf(1).encodeQuantity()).isEqualTo("0x1")
+        assertThat(BigInteger.valueOf(1024).encodeQuantity()).isEqualTo("0x400")
+        assertThat(BigInteger.valueOf(java.lang.Long.MAX_VALUE).encodeQuantity())
                 .isEqualTo("0x7fffffffffffffff")
-        assertThat(encodeQuantity(BigInteger("204516877000845695339750056077105398031")))
+        assertThat(BigInteger("204516877000845695339750056077105398031").encodeQuantity())
                 .isEqualTo("0x99dc848b94efc27edfad28def049810f")
     }
 
     @Test
     fun testQuantityEncodeNegative() {
-        assertThatThrownBy { encodeQuantity(BigInteger.valueOf(-1)) }
+        assertThatThrownBy { BigInteger.valueOf(-1).encodeQuantity() }
                 .isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test
-    fun testCleanHexPrefix() {
-        assertThat(cleanHexPrefix("")).isEqualTo("")
-        assertThat(cleanHexPrefix("0123456789abcdef")).isEqualTo("0123456789abcdef")
-        assertThat(cleanHexPrefix("0x")).isEqualTo("")
-        assertThat(cleanHexPrefix("0x0123456789abcdef")).isEqualTo("0123456789abcdef")
-    }
-
-    @Test
-    fun testPrependHexPrefix() {
-        assertThat(prependHexPrefix("")).isEqualTo("0x")
-        assertThat(prependHexPrefix("0x0123456789abcdef")).isEqualTo("0x0123456789abcdef")
-        assertThat(prependHexPrefix("0x")).isEqualTo("0x")
-        assertThat(prependHexPrefix("0123456789abcdef")).isEqualTo("0x0123456789abcdef")
-    }
-
-    @Test
-    fun testToHexStringWithPrefix() {
-        assertThat(toHexStringWithPrefix(BigInteger.TEN)).isEqualTo("0xa")
-    }
-
-    @Test
-    fun testToHexStringNoPrefix() {
-        assertThat(toHexStringNoPrefix(BigInteger.TEN)).isEqualTo("a")
-    }
-
-    @Test
     fun testToBytesPadded() {
-        assertThat(toBytesPadded(BigInteger.TEN, 1))
+        assertThat(BigInteger.TEN.toBytesPadded(1))
                 .isEqualTo(byteArrayOf(0xa))
 
-        assertThat(toBytesPadded(BigInteger.TEN, 8))
+        assertThat(BigInteger.TEN.toBytesPadded(8))
                 .isEqualTo(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0xa))
 
-        assertThat(toBytesPadded(BigInteger.valueOf(Integer.MAX_VALUE.toLong()), 4))
+        assertThat(BigInteger.valueOf(Integer.MAX_VALUE.toLong()).toBytesPadded(4))
                 .isEqualTo(byteArrayOf(0x7f, 0xff.toByte(), 0xff.toByte(), 0xff.toByte()))
     }
 
     @Test
     fun testToBytesPaddedInvalid() {
-        assertThatThrownBy { toBytesPadded(BigInteger.valueOf(java.lang.Long.MAX_VALUE), 7) }
+        assertThatThrownBy { BigInteger.valueOf(java.lang.Long.MAX_VALUE).toBytesPadded(7) }
                 .isInstanceOf(IllegalArgumentException::class.java)
     }
 
     @Test
     fun testHexStringToByteArray() {
-        assertThat(hexStringToByteArray("")).isEqualTo(byteArrayOf())
-        assertThat(hexStringToByteArray("0")).isEqualTo(byteArrayOf(0))
-        assertThat(hexStringToByteArray("1")).isEqualTo(byteArrayOf(0x1))
-        assertThat(hexStringToByteArray(HEX_RANGE_STRING))
+        assertThat("".hexStringToByteArray())
+                .isEqualTo(byteArrayOf())
+
+        assertThat("0".hexStringToByteArray())
+                .isEqualTo(byteArrayOf(0))
+
+        assertThat("1".hexStringToByteArray())
+                .isEqualTo(byteArrayOf(0x1))
+
+        assertThat(HEX_RANGE_STRING.hexStringToByteArray())
                 .isEqualTo(HEX_RANGE_ARRAY)
-        assertThat(hexStringToByteArray("0x123"))
+
+        assertThat("0x123".hexStringToByteArray())
                 .isEqualTo(byteArrayOf(0x1, 0x23))
     }
 
     @Test
-    fun testToHexString() {
-        assertThat(toHexString(byteArrayOf())).isEqualTo("0x")
-        assertThat(toHexString(byteArrayOf(0x1))).isEqualTo("0x01")
-        assertThat(toHexString(HEX_RANGE_ARRAY)).isEqualTo(HEX_RANGE_STRING)
-    }
-
-    @Test
     fun testToHexStringNoPrefixZeroPadded() {
-        assertThat(toHexStringNoPrefixZeroPadded(BigInteger.ZERO, 5))
+        assertThat(BigInteger.ZERO.toHexStringZeroPadded(5, withPrefix = false))
                 .isEqualTo("00000")
 
-        assertThat(toHexStringNoPrefixZeroPadded(BigInteger("11c52b08330e05d731e38c856c1043288f7d9744", 16), 40))
+        assertThat(BigInteger("11c52b08330e05d731e38c856c1043288f7d9744", 16).toHexStringZeroPadded(40, withPrefix = false))
                 .isEqualTo("11c52b08330e05d731e38c856c1043288f7d9744")
 
-        assertThat(toHexStringNoPrefixZeroPadded(BigInteger("01c52b08330e05d731e38c856c1043288f7d9744", 16), 40))
+        assertThat(BigInteger("01c52b08330e05d731e38c856c1043288f7d9744", 16).toHexStringZeroPadded(40, withPrefix = false))
                 .isEqualTo("01c52b08330e05d731e38c856c1043288f7d9744")
     }
 
     @Test
-    fun testToHexStringWithPrefixZeroPadded() {
-        assertThat(toHexStringWithPrefixZeroPadded(BigInteger.ZERO, 5))
+    fun testToHexStringZeroPadded() {
+        assertThat(BigInteger.ZERO.toHexStringZeroPadded(5))
                 .isEqualTo("0x00000")
 
-        assertThat(toHexStringWithPrefixZeroPadded(BigInteger("01c52b08330e05d731e38c856c1043288f7d9744", 16), 40))
+        assertThat(BigInteger("01c52b08330e05d731e38c856c1043288f7d9744", 16).toHexStringZeroPadded(40))
                 .isEqualTo("0x01c52b08330e05d731e38c856c1043288f7d9744")
 
-        assertThat(toHexStringWithPrefixZeroPadded(BigInteger("01c52b08330e05d731e38c856c1043288f7d9744", 16), 40))
+        assertThat(BigInteger("01c52b08330e05d731e38c856c1043288f7d9744", 16).toHexStringZeroPadded(40))
                 .isEqualTo("0x01c52b08330e05d731e38c856c1043288f7d9744")
     }
 
     @Test
     fun testToHexStringZeroPaddedNegative() {
-        assertThatThrownBy { toHexStringNoPrefixZeroPadded(BigInteger.valueOf(-1), 20) }
-                .isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { BigInteger.valueOf(-1).toHexStringZeroPadded(20) }
+                .isInstanceOf(UnsupportedOperationException::class.java)
     }
 
     @Test
     fun testToHexStringZeroPaddedTooLarge() {
-        assertThatThrownBy { toHexStringNoPrefixZeroPadded(BigInteger.valueOf(100), 1) }
+        assertThatThrownBy { BigInteger.valueOf(100).toHexStringZeroPadded(1) }
                 .isInstanceOf(UnsupportedOperationException::class.java)
     }
 
     @Test
     fun testIsIntegerValue() {
-        assertTrue(isIntegerValue(BigDecimal.ZERO))
-        assertTrue(isIntegerValue(BigDecimal.ZERO))
-        assertTrue(isIntegerValue(BigDecimal.valueOf(java.lang.Long.MAX_VALUE)))
-        assertTrue(isIntegerValue(BigDecimal.valueOf(java.lang.Long.MIN_VALUE)))
-        assertTrue(isIntegerValue(BigDecimal(
-                "9999999999999999999999999999999999999999999999999999999999999999.0")))
-        assertTrue(isIntegerValue(BigDecimal(
-                "-9999999999999999999999999999999999999999999999999999999999999999.0")))
+        assertTrue(BigDecimal.ZERO.isIntegerValue())
+        assertTrue(BigDecimal.ZERO.isIntegerValue())
+        assertTrue(BigDecimal.valueOf(java.lang.Long.MAX_VALUE).isIntegerValue())
+        assertTrue(BigDecimal.valueOf(java.lang.Long.MIN_VALUE).isIntegerValue())
+        assertTrue(BigDecimal("9999999999999999999999999999999999999999999999999999999999999999.0").isIntegerValue())
+        assertTrue(BigDecimal("-9999999999999999999999999999999999999999999999999999999999999999.0").isIntegerValue())
 
-        assertFalse(isIntegerValue(BigDecimal.valueOf(0.1)))
-        assertFalse(isIntegerValue(BigDecimal.valueOf(-0.1)))
-        assertFalse(isIntegerValue(BigDecimal.valueOf(1.1)))
-        assertFalse(isIntegerValue(BigDecimal.valueOf(-1.1)))
+        assertFalse(BigDecimal.valueOf(0.1).isIntegerValue())
+        assertFalse(BigDecimal.valueOf(-0.1).isIntegerValue())
+        assertFalse(BigDecimal.valueOf(1.1).isIntegerValue())
+        assertFalse(BigDecimal.valueOf(-1.1).isIntegerValue())
     }
 }

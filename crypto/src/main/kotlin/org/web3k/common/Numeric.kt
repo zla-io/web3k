@@ -3,24 +3,25 @@ package org.web3k.common
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
-import kotlin.experimental.and
 
 private const val HEX_PREFIX = "0x"
 
-fun encodeQuantity(value: BigInteger): String {
-    return if (value.signum() != -1) {
-        HEX_PREFIX + value.toString(16)
+// Quantity
+
+fun BigInteger.encodeQuantity(): String {
+    return if (signum() != -1) {
+        HEX_PREFIX + toString(16)
     } else {
         throw IllegalArgumentException("Negative values are not supported")
     }
 }
 
-fun decodeQuantity(value: String): BigInteger {
-    if (!isValidHexQuantity(value)) {
+fun String.decodeQuantity(): BigInteger {
+    if (!isValidHexQuantity()) {
         throw IllegalArgumentException("Value must be in format 0x[1-9]+[0-9]* or 0x0")
     }
     try {
-        return BigInteger(value.substring(2), 16)
+        return BigInteger(substring(2), 16)
     } catch (e: NumberFormatException) {
         throw IllegalArgumentException("Negative ", e)
     }
@@ -31,64 +32,44 @@ fun decodeQuantity(value: String): BigInteger {
 // if (value.length() > 3 && value.charAt(2) == '0') {
 //    return false;
 // }
-private fun isValidHexQuantity(value: String): Boolean =
-        value.length >= 3 && value.startsWith(HEX_PREFIX)
+private fun String.isValidHexQuantity(): Boolean =
+        length >= 3 && startsWith(HEX_PREFIX)
 
-fun cleanHexPrefix(input: String): String =
-        if (containsHexPrefix(input)) {
-            input.substring(2)
-        } else {
-            input
-        }
+// X to BigInteger
 
-fun prependHexPrefix(input: String): String =
-        if (!containsHexPrefix(input)) {
-            HEX_PREFIX + input
-        } else {
-            input
-        }
+/** Equivalent of bytes.toBigInteger(0, bytes.size) */
+fun ByteArray.toBigInteger(): BigInteger =
+        BigInteger(1, this)
 
-fun containsHexPrefix(input: String): Boolean =
-        input.length > 1 && input[0] == '0' && input[1] == 'x'
+/** Convert only a part of provided bytes to a big integer. */
+fun ByteArray.toBigInteger(offset: Int, length: Int): BigInteger =
+        Arrays.copyOfRange(this, offset, offset + length)
+                .toBigInteger()
 
-fun toBigInt(value: ByteArray, offset: Int, length: Int): BigInteger =
-        toBigInt(Arrays.copyOfRange(value, offset, offset + length))
+fun String.hexToBigInteger(): BigInteger =
+        BigInteger(clean0xPrefix(), 16)
 
-fun toBigInt(value: ByteArray): BigInteger =
-        BigInteger(1, value)
+// BigInteger to X
 
-fun toBigInt(hexValue: String): BigInteger =
-        toBigIntNoPrefix(cleanHexPrefix(hexValue))
+fun BigDecimal.isIntegerValue(): Boolean =
+        signum() == 0
+                || scale() <= 0
+                || stripTrailingZeros().scale() <= 0
 
-fun toBigIntNoPrefix(hexValue: String): BigInteger =
-        BigInteger(hexValue, 16)
+fun BigInteger.toHexStringWithPrefixSafe(): String =
+        HEX_PREFIX + toHexStringNoPrefix().padStart(2, '0')
 
-fun toHexStringWithPrefix(value: BigInteger): String =
-        HEX_PREFIX + value.toString(16)
+fun BigInteger.toHexStringNoPrefix(): String =
+        toString(16)
 
-fun toHexStringNoPrefix(value: BigInteger): String =
-        value.toString(16)
-
-fun toHexStringNoPrefix(input: ByteArray): String =
-        toHexString(input, 0, input.size, false)
-
-fun toHexStringWithPrefixZeroPadded(value: BigInteger, size: Int): String =
-        toHexStringZeroPadded(value, size, true)
-
-fun toHexStringWithPrefixSafe(value: BigInteger): String =
-        HEX_PREFIX + toHexStringNoPrefix(value).padStart(2, '0')
-
-fun toHexStringNoPrefixZeroPadded(value: BigInteger, size: Int): String =
-        toHexStringZeroPadded(value, size, false)
-
-private fun toHexStringZeroPadded(value: BigInteger, size: Int, withPrefix: Boolean = false): String {
-    var result = toHexStringNoPrefix(value)
+fun BigInteger.toHexStringZeroPadded(size: Int, withPrefix: Boolean = true): String {
+    var result = toHexStringNoPrefix()
 
     val length = result.length
     if (length > size) {
-        throw UnsupportedOperationException("Value " + result + "is larger then length " + size)
-    } else if (value.signum() < 0) {
-        throw IllegalArgumentException("Value cannot be negative")
+        throw UnsupportedOperationException("Value $result is larger then length $size")
+    } else if (signum() < 0) {
+        throw UnsupportedOperationException("Value cannot be negative")
     }
 
     if (length < size) {
@@ -96,15 +77,15 @@ private fun toHexStringZeroPadded(value: BigInteger, size: Int, withPrefix: Bool
     }
 
     return if (withPrefix) {
-        HEX_PREFIX + result
+        "0x$result"
     } else {
         result
     }
 }
 
-fun toBytesPadded(value: BigInteger, length: Int): ByteArray {
+fun BigInteger.toBytesPadded(length: Int): ByteArray {
     val result = ByteArray(length)
-    val bytes = value.toByteArray()
+    val bytes = toByteArray()
 
     val bytesLength: Int
     val srcOffset: Int
@@ -125,52 +106,5 @@ fun toBytesPadded(value: BigInteger, length: Int): ByteArray {
     return result
 }
 
-fun hexStringToByteArray(input: String): ByteArray {
-    val cleanInput = cleanHexPrefix(input)
-
-    val len = cleanInput.length
-
-    if (len == 0) {
-        return byteArrayOf()
-    }
-
-    val data: ByteArray
-    val startIdx: Int
-    if (len % 2 != 0) {
-        data = ByteArray(len / 2 + 1)
-        data[0] = Character.digit(cleanInput[0], 16).toByte()
-        startIdx = 1
-    } else {
-        data = ByteArray(len / 2)
-        startIdx = 0
-    }
-
-    var i = startIdx
-    while (i < len) {
-        data[(i + 1) / 2] = ((Character.digit(cleanInput[i], 16) shl 4) + Character.digit(cleanInput[i + 1], 16)).toByte()
-        i += 2
-    }
-    return data
-}
-
-fun toHexString(input: ByteArray, offset: Int, length: Int, withPrefix: Boolean): String {
-    val stringBuilder = StringBuilder()
-    if (withPrefix) {
-        stringBuilder.append("0x")
-    }
-    for (i in offset until offset + length) {
-        stringBuilder.append(String.format("%02x", input[i] and 0xFF.toByte()))
-    }
-    return stringBuilder.toString()
-}
-
-fun toHexString(input: ByteArray): String =
-        toHexString(input, 0, input.size, true)
-
 fun asByte(m: Int, n: Int): Byte =
         (m shl 4 or n).toByte()
-
-fun isIntegerValue(value: BigDecimal): Boolean =
-        value.signum() == 0
-                || value.scale() <= 0
-                || value.stripTrailingZeros().scale() <= 0

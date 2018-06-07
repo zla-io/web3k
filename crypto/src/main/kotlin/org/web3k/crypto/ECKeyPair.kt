@@ -6,7 +6,7 @@ import org.bouncycastle.crypto.signers.ECDSASigner
 import org.bouncycastle.crypto.signers.HMacDSAKCalculator
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
-import org.web3k.common.toBigInt
+import org.web3k.common.toBigInteger
 import java.math.BigInteger
 import java.security.KeyPair
 import java.util.*
@@ -50,4 +50,4 @@ fun BigInteger.toECKeyPair(): ECKeyPair =
         ECKeyPair(this, publicKeyFromPrivate(this))
 
 fun ByteArray.toECKeyPair(): ECKeyPair =
-        toBigInt(this).toECKeyPair()
+        toBigInteger().toECKeyPair()

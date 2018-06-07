@@ -9,6 +9,16 @@ private val HEX_REGEX = Regex("0[xX][0-9a-fA-F]+")
 class HexadecimalTest {
 
     @Test
+    fun testToHexString() {
+        assertThat(byteArrayOf().toHexString())
+                .isEqualTo("0x")
+        assertThat(byteArrayOf(0x1).toHexString())
+                .isEqualTo("0x01")
+        assertThat(NumericTest.HEX_RANGE_ARRAY.toHexString())
+                .isEqualTo(NumericTest.HEX_RANGE_STRING)
+    }
+
+    @Test
     fun weCanProduceSingleDigitHex() {
         assertThat(0.toByte().toHexString()).isEqualTo("00")
         assertThat(1.toByte().toHexString()).isEqualTo("01")

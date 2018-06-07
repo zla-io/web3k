@@ -52,8 +52,8 @@ fun signMessage(message: ByteArray, keyPair: ECKeyPair, needToHash: Boolean = tr
 
     // 1 header + 32 bytes for R + 32 bytes for S
     val v = headerByte.toByte()
-    val r = toBytesPadded(sig.r, 32)
-    val s = toBytesPadded(sig.s, 32)
+    val r = sig.r.toBytesPadded(32)
+    val s = sig.s.toBytesPadded(32)
 
     return SignatureData(v, r, s)
 }
